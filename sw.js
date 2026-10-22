@@ -1,5 +1,5 @@
 // Bump VERSION whenever a cached file changes, so installed apps pick up the new copy.
-const VERSION = 'pocock-d2d-v1';
+const VERSION = 'pocock-d2d-v2';
 const ASSETS = [
   './',
   './index.html',

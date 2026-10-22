@@ -1,8 +1,10 @@
 # Pocock · Day to day
 
 Webapp installabile (PWA) della guida "Cosa avvii tu, cosa segue": scegli da dove parti e vedi
-una roadmap orizzontale degli step (dalla partenza all'arrivo), seguita dalla spiegazione di
-ogni passaggio. Tocca uno step della roadmap per saltare al suo dettaglio. Funziona offline
+una roadmap orizzontale degli step fino alla fine della skill, poi le strade possibili da lì al
+finale (rilascio, modifiche, altri percorsi), seguite dalla spiegazione di ogni passaggio. Ogni
+strada è marcata "Dalla guida" (segue una regola scritta nella pagina) o "Ipotesi". Tocca uno
+step per saltare al suo dettaglio, o un percorso per aprire la sua roadmap. Funziona offline
 dopo la prima apertura e segue il tema chiaro/scuro del dispositivo.
 
 ## File
