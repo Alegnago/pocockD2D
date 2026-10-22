@@ -10,6 +10,26 @@ dopo la prima apertura e segue il tema chiaro/scuro del dispositivo.
 - `index.html` — la pagina (contenuti e logica in un unico file)
 - `manifest.webmanifest`, `icons/` — nome, colori e icone per l'installazione
 - `sw.js` — service worker: cache per l'uso offline
+- `install-mac.sh`, `icons/AppIcon.icns` — installazione come app locale su macOS
+
+## Installare sul Mac (locale, senza internet)
+
+Apri il Terminale e lancia:
+
+```sh
+git clone -b claude/friendly-archimedes-1btdg2 https://github.com/Alegnago/pocockD2D.git
+cd pocockD2D && ./install-mac.sh
+```
+
+Crea `~/Applications/Pocock D2D.app`. Aprila da Spotlight o Launchpad ("Pocock D2D") e
+trascinala nel Dock se la vuoi sempre a portata.
+
+- Con Chrome, Edge, Brave, Chromium o Vivaldi installato si apre in una finestra dedicata,
+  senza barre del browser, su un profilo separato. Altrimenti si apre nel browser predefinito.
+- Funziona offline: la pagina è dentro l'app.
+- L'icona nel Dock, mentre è aperta, è quella del browser, non quella dell'app.
+- Per aggiornarla dopo una modifica: `git pull && ./install-mac.sh`.
+- Per rimuoverla: `./install-mac.sh --uninstall`.
 
 ## Pubblicare (GitHub Pages)
 
