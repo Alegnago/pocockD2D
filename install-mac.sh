@@ -40,7 +40,7 @@ fi
 
 stop_app
 mkdir -p "$HOME/Applications" "$HOME/Library/LaunchAgents" "$DATA"
-rm -rf "$APP" "$DATA/shortcut.txt"
+rm -rf "$APP" "$DATA/shortcut.txt" "$DATA/pid"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources/www/icons"
 
 cp "$SRC/index.html" "$APP/Contents/Resources/www/"

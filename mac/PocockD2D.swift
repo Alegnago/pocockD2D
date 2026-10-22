@@ -90,6 +90,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKUIDelegate {
         var spec = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
         InstallEventHandler(GetApplicationEventTarget(), { _, _, userData in
             let me = Unmanaged<AppDelegate>.fromOpaque(userData!).takeUnretainedValue()
+            plog("scorciatoia premuta")
             DispatchQueue.main.async { me.toggle() }
             return noErr
         }, 1, &spec, Unmanaged.passUnretained(self).toOpaque(), nil)
@@ -100,6 +101,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKUIDelegate {
             var ref: EventHotKeyRef?
             let status = RegisterEventHotKey(UInt32(kVK_ANSI_P), UInt32(c.mods), id,
                                              GetApplicationEventTarget(), OptionBits(kEventHotKeyExclusive), &ref)
+            plog("registrazione \(c.label): \(status == noErr ? "ok" : "occupata (\(status))")")
             if status == noErr {
                 hotKey = ref
                 chosen = c.label
@@ -111,25 +113,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKUIDelegate {
     }
 
     @objc func toggle() {
+        plog("toggle: visibile=\(panel.isVisible) key=\(panel.isKeyWindow) attiva=\(NSApp.isActive)")
         if panel.isVisible && panel.isKeyWindow { hidePanel() } else { show() }
     }
 
-    @objc func hidePanel() { panel.orderOut(nil) }
+    // Nasconde anche l'app, così il focus torna all'app di prima.
+    @objc func hidePanel() {
+        panel.orderOut(nil)
+        NSApp.hide(nil)
+    }
 
+    // Da macOS 14 la richiesta di attivarsi può essere ignorata per un'app in background:
+    // orderFrontRegardless mostra il pannello comunque, poi prende il focus della tastiera.
     func show() {
-        NSApp.activate(ignoringOtherApps: true)
+        NSApp.unhide(nil)
+        panel.orderFrontRegardless()
+        if #available(macOS 14.0, *) { NSApp.activate() } else { NSApp.activate(ignoringOtherApps: true) }
         panel.makeKeyAndOrderFront(nil)
     }
 }
 
-// Una sola istanza: se è già attiva, le chiede di mostrarsi ed esce.
+func plog(_ message: String) {
+    let file = dataDir.appendingPathComponent("log.txt")
+    let line = "\(ISO8601DateFormatter().string(from: Date())) \(message)\n"
+    try? FileManager.default.createDirectory(at: dataDir, withIntermediateDirectories: true)
+    if let handle = try? FileHandle(forWritingTo: file) {
+        handle.seekToEndOfFile()
+        handle.write(line.data(using: .utf8)!)
+        handle.closeFile()
+    } else {
+        try? line.write(to: file, atomically: true, encoding: .utf8)
+    }
+}
+
+// Una sola istanza: se è già attiva (anche se avviata da launchd), le chiede di mostrarsi ed esce.
+let pidFile = dataDir.appendingPathComponent("pid")
+let myPID = ProcessInfo.processInfo.processIdentifier
+let previousPID = (try? String(contentsOf: pidFile, encoding: .utf8)).flatMap { pid_t($0) }
 let others = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
-    .filter { $0.processIdentifier != ProcessInfo.processInfo.processIdentifier }
-if !others.isEmpty {
+    .filter { $0.processIdentifier != myPID }
+let previousAlive = previousPID.map { $0 != myPID && kill($0, 0) == 0 } ?? false
+if !others.isEmpty || previousAlive {
     DistributedNotificationCenter.default().postNotificationName(
         toggleNote, object: nil, userInfo: nil, deliverImmediately: true)
     exit(0)
 }
+try? FileManager.default.createDirectory(at: dataDir, withIntermediateDirectories: true)
+try? String(myPID).write(to: pidFile, atomically: true, encoding: .utf8)
+plog("avvio, pid \(myPID)")
 
 let app = NSApplication.shared
 let delegate = AppDelegate()
