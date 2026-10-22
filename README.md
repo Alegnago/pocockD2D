@@ -23,13 +23,15 @@ git clone -b claude/friendly-archimedes-1btdg2 https://github.com/Alegnago/pococ
 cd pocockD2D && ./install-mac.sh
 ```
 
-Crea `~/Applications/Pocock D2D.app`. Aprila da Spotlight o Launchpad ("Pocock D2D") e
-trascinala nel Dock se la vuoi sempre a portata.
+Compila una piccola app nativa (`mac/PocockD2D.swift`) in `~/Applications/Pocock D2D.app`.
+Servono gli strumenti da riga di comando di Apple: se mancano, lo script ne avvia l'installazione.
 
-- Con Chrome, Edge, Brave, Chromium o Vivaldi installato si apre in una finestra dedicata,
-  senza barre del browser, su un profilo separato. Altrimenti si apre nel browser predefinito.
+- Non compare né nel Dock né nella barra dei menu e parte da sola al login.
+- Si apre e si chiude con una scorciatoia globale sulla P: la prima libera tra ⌃⌥P, ⌃⌥⌘P,
+  ⌃⌥⇧P e ⌃⇧⌘P. Lo script stampa quella scelta, che resta salvata in
+  `~/Library/Application Support/PocockD2D/shortcut.txt`. Si nasconde anche con Esc o ⌘W.
+- Il pannello ti segue su tutte le scrivanie e sopra le app a schermo intero.
 - Funziona offline: la pagina è dentro l'app.
-- L'icona nel Dock, mentre è aperta, è quella del browser, non quella dell'app.
 - Per aggiornarla dopo una modifica: `git pull && ./install-mac.sh`.
 - Per rimuoverla: `./install-mac.sh --uninstall`.
 
